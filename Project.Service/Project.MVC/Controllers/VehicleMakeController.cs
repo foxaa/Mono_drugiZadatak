@@ -6,36 +6,66 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+//using Project.Service;
 using Project.Service.DAL;
 using Project.Service.Models;
+using Project.Service.ViewModels;
 
 
 namespace Project.MVC.Controllers
 {
     public class VehicleMakeController : Controller
     {
-        private VehicleContext db = new VehicleContext();
-
+        private VehicleService vehicleService = new VehicleService();
         // GET: VehicleMake
+
+       /*private VehicleMakeController()
+        {
+            this.vehicleService = VehicleService.Instance;
+        }*/
         public ActionResult Index()
         {
-            return View(db.VehicleMakers.ToList());
+            return View(vehicleService.GetVehicleMakes());
+           // return View();
         }
 
-        // GET: VehicleMake/Details/5
-        public ActionResult Details(Guid? id)
+        //// GET: VehicleMake/Details/5
+        //public ActionResult Details(Guid? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    VehicleMake vehicleMake = db.VehicleMakers.Find(id);
+        //    if (vehicleMake == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(vehicleMake);
+        //}
+
+        //// GET: VehicleMake/Create
+        /*public ActionResult Create()
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            VehicleMake vehicleMake = db.VehicleMakers.Find(id);
-            if (vehicleMake == null)
-            {
-                return HttpNotFound();
-            }
-            return View(vehicleMake);
-        }
+            return View();
+        }*/
+
+        //// POST: VehicleMake/Create
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create([Bind(Include = "Id,Name,Abrv")] VehicleMake vehicleMake)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        vehicleMake.Id = Guid.NewGuid();
+        //        db.VehicleMakers.Add(vehicleMake);
+        //        db.SaveChanges();
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View(vehicleMake);
+        //}
 
         // GET: VehicleMake/Create
         public ActionResult Create()
@@ -43,63 +73,31 @@ namespace Project.MVC.Controllers
             return View();
         }
 
-        // POST: VehicleMake/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Abrv")] VehicleMake vehicleMake)
+        public ActionResult Create([Bind(Include ="Id,Name,Abrv")] VehicleMakeViewModel vehicleMakeView)
         {
+            vehicleMakeView.Id = System.Guid.NewGuid();
             if (ModelState.IsValid)
             {
-                vehicleMake.Id = Guid.NewGuid();
-                db.VehicleMakers.Add(vehicleMake);
-                db.SaveChanges();
+                vehicleService.CreateVehicleMake(vehicleMakeView);
                 return RedirectToAction("Index");
             }
-
-            return View(vehicleMake);
-        }
-
-        // GET: VehicleMake/Edit/5
-        public ActionResult Edit(Guid? id)
-        {
-            /*if (id == null)
+            else
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }*/
-            VehicleMake vehicleMake = db.VehicleMakers.Find(id);
-            if (vehicleMake == null)
-            {
-                return HttpNotFound();
+                ModelState.AddModelError("", "Krivo unesen maker");
             }
-            return View(vehicleMake);
-        }
+            return View(vehicleMakeView);
 
-        // POST: VehicleMake/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Abrv")] VehicleMake vehicleMake)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(vehicleMake).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(vehicleMake);
         }
-
-        // GET: VehicleMake/Delete/5
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            VehicleMake vehicleMake = db.VehicleMakers.Find(id);
+            VehicleMakeViewModel vehicleMake = vehicleService.FindVehicleMake((Guid)id);
+            //VehicleMake vehicleMake = db.VehicleMakers.Find(id);
             if (vehicleMake == null)
             {
                 return HttpNotFound();
@@ -107,24 +105,108 @@ namespace Project.MVC.Controllers
             return View(vehicleMake);
         }
 
-        // POST: VehicleMake/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+
         public ActionResult DeleteConfirmed(Guid id)
         {
-            VehicleMake vehicleMake = db.VehicleMakers.Find(id);
-            db.VehicleMakers.Remove(vehicleMake);
-            db.SaveChanges();
+            VehicleMakeViewModel vehicleMakeView = vehicleService.FindVehicleMake((Guid)id);
+            //VehicleMake vehicleMake = db.VehicleMakers.Find(id);
+            vehicleService.DeleteVehicleMake(id);
+            //db.VehicleMakers.Remove(vehicleMake);
+            //db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
+
+
+        //// GET: VehicleMake/Edit/5
+        //public ActionResult Edit(Guid? id)
+        //{
+        //    /*if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }*/
+        //    VehicleMake vehicleMake = db.VehicleMakers.Find(id);
+        //    if (vehicleMake == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(vehicleMake);
+        //}
+        public ActionResult Edit(Guid? id)
         {
-            if (disposing)
+            if(id==null)
             {
-                db.Dispose();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            base.Dispose(disposing);
+            VehicleMakeViewModel vehicleMake = vehicleService.FindVehicleMake((Guid)id);
+            if(vehicleMake==null)
+            {
+                return HttpNotFound();
+            }
+            return View(vehicleMake);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(VehicleMakeViewModel vm)
+        {
+
+                vehicleService.EditVehicleMake(vm);
+                //db.Entry(vehicleMake).State = EntityState.Modified;
+                //db.SaveChanges();
+                return RedirectToAction("Index");
+
+        }
+        //// POST: VehicleMake/Edit/5
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit([Bind(Include = "Id,Name,Abrv")] VehicleMake vehicleMake)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Entry(vehicleMake).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View(vehicleMake);
+        //}
+
+        //// GET: VehicleMake/Delete/5
+        //public ActionResult Delete(Guid? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    VehicleMake vehicleMake = db.VehicleMakers.Find(id);
+        //    if (vehicleMake == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(vehicleMake);
+        //}
+
+        //// POST: VehicleMake/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult DeleteConfirmed(Guid id)
+        //{
+        //    VehicleMake vehicleMake = db.VehicleMakers.Find(id);
+        //    db.VehicleMakers.Remove(vehicleMake);
+        //    db.SaveChanges();
+        //    return RedirectToAction("Index");
+        //}
+
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
     }
 }
