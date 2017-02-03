@@ -43,15 +43,102 @@ namespace Project.Service.DAL
             return Mapper.Map<VehicleMakeViewModel>(vehicleMake);//mapping iz source(vehicleMake model) u VehicleMakeViewModel
 
         }
+        public VehicleModelViewModel FindVehicleModel(Guid id)
+        {
+            VehicleModel vehicleModel = db.VehicleModels.Find(id);
+            return Mapper.Map<VehicleModelViewModel>(vehicleModel);
+        }
+        public IEnumerable<VehicleMakeViewModel> SortVehicleMake(string sortOrder,string searchString)
+        {
+            //var vmks = Mapper.Map < IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.ToList());
+            switch (searchString)
+            {
+                case "Name":
+                    switch (sortOrder)
+                    {
+                        case "Name_desc":
+                            //vmks = vmks.OrderByDescending(vmk => vmk.Name);
+                            //return Mapper.Map<VehicleMakeViewModel>(db.VehicleMakers.OrderByDescending(v => v.Name));
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.Where(vm=>vm.Name.Contains(searchString)).OrderByDescending(v => v.Name).ToList());
+                        //break;
+                        case "Abrv":
+                            //return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.OrderBy(v => v.Abrv).ToList());
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.Where(vm => vm.Name.Contains(searchString)).OrderBy(v => v.Abrv).ToList());
+                        case "Abrv_desc":
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.Where(vm => vm.Name.Contains(searchString)).OrderByDescending(v => v.Abrv).ToList());
+
+                        default:
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.Where(vm => vm.Name.Contains(searchString)).OrderBy(v => v.Name).ToList());
+                    }
+                case "Abrv":
+                    switch(sortOrder)
+                    {
+                        case "Name_desc":
+                            //vmks = vmks.OrderByDescending(vmk => vmk.Name);
+                            //return Mapper.Map<VehicleMakeViewModel>(db.VehicleMakers.OrderByDescending(v => v.Name));
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.OrderByDescending(v => v.Name).ToList());
+                        //break;
+                        case "Abrv":
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.OrderBy(v => v.Abrv).ToList());
+                        case "Abrv_desc":
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.OrderByDescending(v => v.Abrv).ToList());
+
+                        default:
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.OrderBy(v => v.Name).ToList());
+                    }
+                default:
+                    switch(sortOrder)
+                    {
+                        case "Name_desc":
+                            //vmks = vmks.OrderByDescending(vmk => vmk.Name);
+                            //return Mapper.Map<VehicleMakeViewModel>(db.VehicleMakers.OrderByDescending(v => v.Name));
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.OrderByDescending(v => v.Name).ToList());
+                        //break;
+                        case "Abrv":
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.OrderBy(v => v.Abrv).ToList());
+                        case "Abrv_desc":
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.OrderByDescending(v => v.Abrv).ToList());
+
+                        default:
+                            return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.OrderBy(v => v.Name).ToList());
+                    }
+            }   
+        }
+        public IEnumerable<VehicleModelViewModel> SortVehicleModel(string sortOrder)//ide ovo IEnumerable zato sto se mora vratit cijela lista tj tablica
+        {
+            switch(sortOrder)
+            {
+                case "Name_desc":
+                    return Mapper.Map<IEnumerable<VehicleModelViewModel>>(db.VehicleModels.OrderByDescending(v => v.Name).ToList());
+                case "Abrv":
+                    return Mapper.Map<IEnumerable<VehicleModelViewModel>>(db.VehicleModels.OrderBy(v => v.Abrv).ToList());
+                case "Abrv_desc":
+                    return Mapper.Map<IEnumerable<VehicleModelViewModel>>(db.VehicleModels.OrderByDescending(v => v.Abrv).ToList());
+                default:
+                    return Mapper.Map<IEnumerable<VehicleModelViewModel>>(db.VehicleModels.OrderBy(v => v.Name).ToList());
+            }
+        }
         public void CreateVehicleMake(VehicleMakeViewModel vm)
         {
             db.VehicleMakers.Add(Mapper.Map<VehicleMake>(vm));
             db.SaveChanges();
         }
+        public void CreateVehicleModel(VehicleModelViewModel vm)
+        {
+            db.VehicleModels.Add(Mapper.Map<VehicleModel>(vm));
+            db.SaveChanges();
+        }
+        
         public void DeleteVehicleMake(Guid id)
         {
             VehicleMake vM = db.VehicleMakers.Find(id);
             db.VehicleMakers.Remove(vM);
+            db.SaveChanges();
+        }
+        public void DeleteVehicleModel(Guid id)
+        {
+            VehicleModel vm = db.VehicleModels.Find(id);
+            db.VehicleModels.Remove(vm);
             db.SaveChanges();
         }
         public void EditVehicleMake(VehicleMakeViewModel vmk)
@@ -62,11 +149,20 @@ namespace Project.Service.DAL
             //db.VehicleMakers.Add(Mapper.Map<VehicleMake>(vm));
             db.SaveChanges();   
         }
+        public void EditVehicleModel(VehicleModelViewModel vvm)
+        {
+            db.Entry(Mapper.Map<VehicleModel>(vvm)).State = EntityState.Modified;
+            db.SaveChanges();
+        }
 
         public IEnumerable<VehicleMakeViewModel> GetVehicleMakes()
         {
             
             return Mapper.Map<IEnumerable<VehicleMakeViewModel>>(db.VehicleMakers.ToList());
+        }
+        public IEnumerable<VehicleModelViewModel> GetVehicleModels()
+        {
+            return Mapper.Map<IEnumerable<VehicleModelViewModel>>(db.VehicleModels.ToList());
         }
         //public VehicleMake Retrieve 
     }

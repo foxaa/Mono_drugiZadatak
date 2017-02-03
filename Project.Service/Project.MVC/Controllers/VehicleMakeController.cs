@@ -23,10 +23,47 @@ namespace Project.MVC.Controllers
         {
             this.vehicleService = VehicleService.Instance;
         }*/
-        public ActionResult Index()
+        /*public ActionResult Index()
         {
             return View(vehicleService.GetVehicleMakes());
            // return View();
+        }*/
+        public ActionResult Index(string sortOrder,string searchString)
+        {
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "Name_desc" : "";
+            ViewBag.AbrvSort = sortOrder == "Abrv" ? "Abrv_desc" : "Abrv";
+            //VehicleMakeViewModel vehicleMake = vehicleService.SortVehicleMake(sortOrder);
+            /*var vehicles = from v in vehicleService.GetVehicleMakes() select v;
+            switch(sortOrder)
+            {
+                case "Name":
+                    vehicles = vehicles.OrderByDescending(v => v.Name);
+                    break;
+                default:
+                    vehicles = vehicles.OrderBy(v => v.Name);
+                    break;
+            }*/
+            if (searchString == null)
+            {
+                return View(vehicleService.SortVehicleMake(sortOrder,""));
+            }
+            else
+            {
+                return View(vehicleService.SortVehicleMake(sortOrder, searchString));
+            }
+        }
+        public ActionResult Details(Guid? id)
+        {
+            if(id==null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            VehicleMakeViewModel vehicleMake = vehicleService.FindVehicleMake((Guid)id);
+            if(vehicleMake==null)
+            {
+                return HttpNotFound();
+            }
+            return View(vehicleMake);
         }
 
         //// GET: VehicleMake/Details/5
