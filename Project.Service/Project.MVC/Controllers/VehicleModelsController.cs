@@ -14,8 +14,9 @@ namespace Project.MVC.Controllers
 {
     public class VehicleModelsController : Controller
     {
-        IVehicleService v1 = new VehicleService();
-        private VehicleService vehicleService = new VehicleService();
+
+        private VehicleService vehicleService = VehicleService.Instance;
+        
         private const int PageSize = 5;
         //private VehicleContext db = new VehicleContext();
         /*public ActionResult Index()

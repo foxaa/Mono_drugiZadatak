@@ -16,7 +16,7 @@ namespace Project.MVC.Controllers
 {
     public class VehicleMakeController : Controller
     {
-        private VehicleService vehicleService = new VehicleService();
+        private VehicleService vehicleService = VehicleService.Instance;
         private const int PageSize = 5;
         // GET: VehicleMake
 
