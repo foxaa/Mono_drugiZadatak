@@ -1,4 +1,7 @@
-﻿@model IEnumerable<Project.Service.ViewModels.VehicleModelViewModel>
+﻿@*@model IEnumerable<Project.Service.ViewModels.VehicleModelViewModel>*@
+@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<Project.Service.ViewModels.VehicleModelViewModel>
 
 @{
     ViewBag.Title = "Index";
@@ -9,11 +12,22 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm("Index", "VehicleModels", FormMethod.Get))
+{
+    <p>
+        @Html.RadioButton("search", "MakeName", true)<text>MakeName</text>
+        @Html.RadioButton("search", "Name")<text>Name</text>
+        @Html.RadioButton("search", "Abrv")<text>Abrv</text>
+        Find: @Html.TextBox("searchString")
+        <input type="submit" value="Search" />
+
+    </p>
+}
 <table class="table">
     <tr>
-        <th>
+        @*<th>
             @Html.DisplayNameFor(model => model.VehicleMake.Name)
-        </th>
+        </th>*@
         @*<th>
             @Html.DisplayNameFor(model => model.Name)
         </th>
@@ -22,10 +36,13 @@
         </th>
         <th></th>*@
         <th>
-            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.SortNameModel })
+            @Html.ActionLink("MakeName", "Index", new { search = Request.QueryString["search"], sortOrder = ViewBag.SortNameMake, searchString = Request.QueryString["searchString"] })
         </th>
         <th>
-            @Html.ActionLink("Abrv", "Index", new { sortOrder = ViewBag.SortAbrvModel })
+            @Html.ActionLink("Name", "Index", new { search=Request.QueryString["search"],sortOrder = ViewBag.SortNameModel,searchString=Request.QueryString["searchString"] })
+        </th>
+        <th>
+            @Html.ActionLink("Abrv", "Index", new { search = Request.QueryString["search"], sortOrder = ViewBag.SortAbrvModel, searchString = Request.QueryString["searchString"] })
         </th>
         <th></th>
     </tr>
@@ -50,3 +67,6 @@
 }
 
 </table>
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+

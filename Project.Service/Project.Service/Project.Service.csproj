@@ -65,6 +65,7 @@
     <Compile Include="DAL\VehicleContext.cs" />
     <Compile Include="DAL\VehicleInitializer.cs" />
     <Compile Include="DAL\VehicleService.cs" />
+    <Compile Include="DAL\IVehicleService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\VehicleMake.cs" />
     <Compile Include="Models\VehicleModel.cs" />

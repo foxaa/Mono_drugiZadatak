@@ -17,18 +17,19 @@ namespace Project.MVC.Controllers
     public class VehicleMakeController : Controller
     {
         private VehicleService vehicleService = new VehicleService();
+        private const int PageSize = 5;
         // GET: VehicleMake
 
-       /*private VehicleMakeController()
-        {
-            this.vehicleService = VehicleService.Instance;
-        }*/
+        /*private VehicleMakeController()
+         {
+             this.vehicleService = VehicleService.Instance;
+         }*/
         /*public ActionResult Index()
         {
             return View(vehicleService.GetVehicleMakes());
            // return View();
         }*/
-        public ActionResult Index(string sortOrder,string searchString)
+        public ActionResult Index(string search,string sortOrder,string searchString,int? page)
         {
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "Name_desc" : "";
             ViewBag.AbrvSort = sortOrder == "Abrv" ? "Abrv_desc" : "Abrv";
@@ -45,11 +46,11 @@ namespace Project.MVC.Controllers
             }*/
             if (searchString == null)
             {
-                return View(vehicleService.SortVehicleMake(sortOrder,""));
+                return View(vehicleService.SortVehicleMake("",sortOrder,"",page,PageSize));
             }
             else
             {
-                return View(vehicleService.SortVehicleMake(sortOrder, searchString));
+                return View(vehicleService.SortVehicleMake(search,sortOrder, searchString,page,PageSize));
             }
         }
         public ActionResult Details(Guid? id)

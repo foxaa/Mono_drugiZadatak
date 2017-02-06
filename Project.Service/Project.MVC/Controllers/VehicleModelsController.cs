@@ -14,18 +14,29 @@ namespace Project.MVC.Controllers
 {
     public class VehicleModelsController : Controller
     {
+        IVehicleService v1 = new VehicleService();
         private VehicleService vehicleService = new VehicleService();
+        private const int PageSize = 5;
         //private VehicleContext db = new VehicleContext();
         /*public ActionResult Index()
         {
             return View(vehicleService.GetVehicleModels());
         }*/
-        public ActionResult Index(string sortOrder)
+        public ActionResult Index(string search,string sortOrder,string searchString, int? page)
         {
+            //ViewBag.SortNameMake = String.IsNullOrEmpty(sortOrder) ? "MakeName" : "";
+            //ViewBag.SortNameMake = sortOrder== "MakeName"?"MakeName_desc":"Abrv";
             ViewBag.SortNameModel = String.IsNullOrEmpty(sortOrder) ? "Name_desc" : "";
+            ViewBag.SortNameMake = sortOrder == "MakeName" ? "MakeName_desc":"MakeName";
             ViewBag.SortAbrvModel = sortOrder == "Abrv" ? "Abrv_desc" : "Abrv";
-
-            return View(vehicleService.SortVehicleModel(sortOrder));
+            if (searchString == null)
+            {
+                return View(vehicleService.SortVehicleModel("", sortOrder, "",page,PageSize));
+            }
+            else
+            {
+                return View(vehicleService.SortVehicleModel(search, sortOrder, searchString,page,PageSize));
+            }
         }
         //// GET: VehicleModels
         //public ActionResult Index()

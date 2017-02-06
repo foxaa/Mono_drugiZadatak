@@ -1,4 +1,7 @@
-﻿@model IEnumerable<Project.Service.ViewModels.VehicleMakeViewModel>
+﻿@*@model IEnumerable<Project.Service.ViewModels.VehicleMakeViewModel>*@
+@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<Project.Service.ViewModels.VehicleMakeViewModel>
 
 @{
     ViewBag.Title = "Index";
@@ -9,11 +12,15 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-@using (Html.BeginForm())
+@using (Html.BeginForm("Index", "VehicleMake", FormMethod.Get))
 {
     <p>
-        Find by name: @Html.TextBox("searchString")
+
+        @Html.RadioButton("search","Name",true)<text>Name</text>
+        @Html.RadioButton("search","Abrv")<text>Abrv</text>
+        Find: @Html.TextBox("searchString")
         <input type="submit" value="Search" />
+
     </p>
 }
 <table class="table">
@@ -28,10 +35,10 @@
     </tr>*@
     <tr>
         <th>
-            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParm,searchString=Request.QueryString["searchString"]})
+            @Html.ActionLink("Name", "Index", new {search=Request.QueryString["search"], sortOrder = ViewBag.NameSortParm,searchString=Request.QueryString["searchString"]})
         </th>
         <th>
-            @Html.ActionLink("Abrv", "Index", new { sortOrder = ViewBag.AbrvSort, searchString = Request.QueryString["searchString"]})
+            @Html.ActionLink("Abrv", "Index", new { search = Request.QueryString["search"],sortOrder = ViewBag.AbrvSort, searchString = Request.QueryString["searchString"]})
         </th>
         <th></th>
     </tr>
@@ -54,3 +61,7 @@
 }
 
 </table>
+<br />
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
